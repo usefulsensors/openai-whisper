@@ -16,3 +16,14 @@
   </td>
 </table>
 *Estimated Run Time: ~1 Mins.*
+
+##
+
+## Run openai-whisper ASR model to generate closed captions
+<table class="tfo-notebook-buttons" align="left">
+  <td>
+    <a target="_blank" href="https://colab.research.google.com/github/usefulsensors/openai-whisper/blob/main/youtube_to_subtitles.ipynb"><img src="https://www.tensorflow.org/images/colab_logo_32px.png" />Google Colaboratory</a>
+  </td>
+</table>
+*Estimated Run Time: ~1 Mins.*
+##
