@@ -11,7 +11,7 @@ For more information see the OpenAI whisper [paper](https://cdn.openai.com/paper
 
 ##   
 
-## Convert openai-whisper ASR pytorch to model
+## Convert openai-whisper ASR pytorch to tflite model
 <table class="tfo-notebook-buttons" align="left">
   <td>
     <a target="_blank" href="https://colab.research.google.com/github/usefulsensors/openai-whisper/blob/main/tinynn_pytorch_to_tflite_int8.ipynb"><img src="https://www.tensorflow.org/images/colab_logo_32px.png" />Google Colaboratory</a>
