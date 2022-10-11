@@ -21,6 +21,16 @@ For more information see the OpenAI whisper [paper](https://cdn.openai.com/paper
 
 ##
 
+## Convert Huggingface-openai-whisper ASR tf saved to tflite model
+<table class="tfo-notebook-buttons" align="left">
+  <td>
+    <a target="_blank" href="https://colab.research.google.com/github/usefulsensors/openai-whisper/blob/main/tflite_from_huggingface_whisper.ipynb"><img src="https://www.tensorflow.org/images/colab_logo_32px.png" />Google Colaboratory</a>
+  </td>
+</table>
+*Estimated Run Time: ~5 Mins.*
+
+##
+
 ## Run openai-whisper ASR model to generate closed captions for youtube videos
 <table class="tfo-notebook-buttons" align="left">
   <td>
