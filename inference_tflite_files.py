@@ -1,6 +1,6 @@
 import tensorflow as tf
 import numpy as np
-tflite_model_path_1 = '/home/niranjanyadla/Downloads/whisper-encoder.tflite'
+tflite_model_path_1 = '~/Downloads/whisper-encoder.tflite'
 
 
 # Load the TFLite model and allocate tensors
@@ -35,7 +35,7 @@ interpreter_1.invoke()
 print("after whisper-encoder.tflite inference")
 print("\n\n\n\n")
 
-tflite_model_path_2 = '/home/niranjanyadla/Downloads/whisper-decoder_main.tflite'
+tflite_model_path_2 = '~/Downloads/whisper-decoder_main.tflite'
 # Load the TFLite model and allocate tensors
 interpreter_2 = tf.lite.Interpreter(model_path=tflite_model_path_2)
 interpreter_2.allocate_tensors()
@@ -68,7 +68,7 @@ interpreter_2.invoke()
 print("after whisper-decoder_main.tflite inference")
 print("\n\n\n\n")
 
-tflite_model_path_3 = '/home/niranjanyadla/Downloads/whisper-decoder_language.tflite'
+tflite_model_path_3 = '~/Downloads/whisper-decoder_language.tflite'
 # Load the TFLite model and allocate tensors
 interpreter_3 = tf.lite.Interpreter(model_path=tflite_model_path_3)
 interpreter_3.allocate_tensors()
