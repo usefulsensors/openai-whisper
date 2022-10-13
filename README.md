@@ -1,17 +1,6 @@
 For more information see the OpenAI whisper [paper](https://cdn.openai.com/papers/whisper.pdf).
 
-# openai-whisper
-## Run  openai-whisper ASR model
-<table class="tfo-notebook-buttons" align="left">
-  <td>
-    <a target="_blank" href="https://colab.research.google.com/github/usefulsensors/openai-whisper/blob/main/openai_whisper_ASR.ipynb"><img src="https://www.tensorflow.org/images/colab_logo_32px.png" />Google Colaboratory</a>
-  </td>
-</table>
-*Estimated Run Time: ~1 Mins.*
-
-##   
-
-## Convert openai-whisper ASR pytorch to tflite(int8) model
+## Convert openai-whisper ASR from pytorch to tflite(int8) model
 <table class="tfo-notebook-buttons" align="left">
   <td>
     <a target="_blank" href="https://colab.research.google.com/github/usefulsensors/openai-whisper/blob/main/tinynn_pytorch_to_tflite_int8.ipynb"><img src="https://www.tensorflow.org/images/colab_logo_32px.png" />Google Colaboratory</a>
@@ -39,3 +28,14 @@ For more information see the OpenAI whisper [paper](https://cdn.openai.com/paper
 </table>
 *Estimated Run Time: ~1 Mins.*
 ##
+
+# openai-whisper
+## Run  openai-whisper ASR model
+<table class="tfo-notebook-buttons" align="left">
+  <td>
+    <a target="_blank" href="https://colab.research.google.com/github/usefulsensors/openai-whisper/blob/main/openai_whisper_ASR.ipynb"><img src="https://www.tensorflow.org/images/colab_logo_32px.png" />Google Colaboratory</a>
+  </td>
+</table>
+*Estimated Run Time: ~1 Mins.*
+
+##  
