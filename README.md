@@ -42,7 +42,7 @@ cmake --build . -j
 
 #### Step 6. Run the whisper.tflite 
 ```sh
-./minimal ~/openai-whisper/models/whisper.tflite
+./minimal ~/openai-whisper/models/whisper.tflite ~/openai-whisper/test.wav
 ```
 
 ## Convert openai-whisper ASR from pytorch to tflite(int8) model
