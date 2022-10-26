@@ -7,7 +7,8 @@ This example shows how you can build a simple TensorFlow Lite application.
 
 #### Step 1. Clone Usefulsensors/openai-whisper repository
 
-It requires 'git lfs install' as our [whisper.tflite](https://github.com/usefulsensors/openai-whisper/blob/main/models/whisper.tflite) model uses Git Large File Storage (LFS)
+It requires 'git lfs install' as our [whisper.tflite](https://github.com/usefulsensors/openai-whisper/blob/main/models/whisper.tflite) model uses Git Large File Storage (LFS).
+
 you can follow
 [git lfs installation guide](https://git-lfs.github.com/)
 
