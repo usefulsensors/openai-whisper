@@ -65,4 +65,4 @@ cp ../tflite_minimal/vocab_gen.bin ./
 #### Step 8. Run the whisper.tflite with pre generated input_features or 16Khz 16bit Mono Audio file
 ```sh
 ./minimal ../models/whisper.tflite
-./minimal ../models/whisper.tflite ../../../samples/test.wav
+./minimal ../models/whisper.tflite ../samples/test.wav
