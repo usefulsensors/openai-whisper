@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
 
     if (magic != 0x5553454e) {
         printf("%s: invalid vocab file '%s' (bad magic)\n", __func__, fname.c_str());
-        return false;
+        return 0;
     }
   }
 
@@ -151,9 +151,12 @@ int main(int argc, char* argv[]) {
       }
     }
     filters.n_mel = 80;
-    filters.n_mel = 201;
+    filters.n_fft = 201;
     filters.data.resize(filters.n_mel * filters.n_fft);
     memcpy((char *)filters.data.data(),input_features_filters_bin,16080*sizeof(float));
+
+    //Hack if the audio file size is less than 30ms append with 0's
+    pcmf32.resize(WHISPER_SAMPLE_RATE*WHISPER_CHUNK_SIZE,0);
     if (!log_mel_spectrogram(pcmf32.data(), pcmf32.size(), WHISPER_SAMPLE_RATE, WHISPER_N_FFT, WHISPER_HOP_LENGTH, WHISPER_N_MEL, 1,filters, mel)) {
       fprintf(stderr, "%s: failed to compute mel spectrogram\n", __func__);
       return -1;
