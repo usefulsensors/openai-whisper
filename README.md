@@ -59,18 +59,20 @@ cmake ../tensorflow_src/tensorflow/lite/examples/minimal
 In the minimal_build directory,
 
 ```sh
+# build the main example
 cmake --build . -j
 ```
 
-#### Step 7. Copy ~/tflite_minimal/vocab_gen.bin to minimal_build
+#### Step 7. Copy ~/tflite_minimal/filters_vocab_gen.bin to minimal_build
 
 ```sh
-cp ../tflite_minimal/vocab_gen.bin ./
+cp ../tflite_minimal/filters_vocab_gen.bin ./
 ```
 
 #### Step 8. Run the whisper.tflite with pre generated input_features or 16Khz 16bit Mono Audio file
 ```sh
 ./minimal ../models/whisper.tflite
+# transcribe an audio file
 ./minimal ../models/whisper.tflite ../samples/jfk.wav
 ./minimal ../models/whisper.tflite ../samples/test.wav
 ./minimal ../models/whisper.tflite ../samples/test_1.wav
