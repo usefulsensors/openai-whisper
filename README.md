@@ -3,7 +3,7 @@ For more information see the OpenAI whisper [paper](https://cdn.openai.com/paper
 Supported platforms:
 
 - [x] Linux 
-- [x] Mac OS (Intel and Arm)
+- [x] Mac OS (Intel)
 
 
 # To run whisper inference on TFLite framework
