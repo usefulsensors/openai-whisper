@@ -1,5 +1,11 @@
 For more information see the OpenAI whisper [paper](https://cdn.openai.com/papers/whisper.pdf).
 
+Supported platforms:
+
+- [x] Linux 
+- [x] Mac OS (Intel and Arm)
+
+
 # To run whisper inference on TFLite framework
 TensorFlow Lite C++ minimal example to run inference on [whisper.tflite](https://github.com/usefulsensors/openai-whisper/blob/main/models/whisper.tflite)(~40 MB hybrid model weights are in int8 and activations are in float32)
 
