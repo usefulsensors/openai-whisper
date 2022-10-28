@@ -212,6 +212,9 @@ int main(int argc, char* argv[]) {
   std::string text = "";
   for (int i = 0; i < output_size; i++) {
     //printf("%d\t",output_int[i]);
+    if(output_int[i] == g_vocab.token_eot) {
+      break;
+    }
     text += whisper_token_to_str(output_int[i]);
   }
   printf("\n%s\n", text.c_str());
