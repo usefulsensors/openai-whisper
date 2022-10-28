@@ -46,62 +46,73 @@ int main(int argc, char* argv[]) {
   whisper_mel mel;
   struct timeval start_time,end_time;
   std::string word;
-  int n_vocab= 0;
-
-  std::string fname = "./vocab_gen.bin";
+  int32_t n_vocab = 0;
+  std::string fname = "./filters_vocab_gen.bin";
   auto fin = std::ifstream(fname, std::ios::binary);
   {
     uint32_t magic=0;
     fin.read((char *) &magic, sizeof(magic));
-
+    //@magic:USEN
     if (magic != 0x5553454e) {
         printf("%s: invalid vocab file '%s' (bad magic)\n", __func__, fname.c_str());
         return 0;
     }
   }
 
-  fin.read((char *) &n_vocab, sizeof(n_vocab));
-  g_vocab.n_vocab = n_vocab;
-  printf("\nn_vocab:%d\n",(int)n_vocab);
+  // load mel filters
+  {
+      fin.read((char *) &filters.n_mel, sizeof(filters.n_mel));
+      fin.read((char *) &filters.n_fft, sizeof(filters.n_fft));
 
-  for (int i = 0; i < n_vocab; i++) {
-    uint32_t len;
-    fin.read((char *) &len, sizeof(len));
-
-    word.resize(len);
-    fin.read((char *) word.data(), len);
-    g_vocab.id_to_token[i] = word;
-    //printf("len:%d",(int)len);
-    //printf("'%s'\n", g_vocab.id_to_token[i].c_str());
+      filters.data.resize(filters.n_mel * filters.n_fft);
+      fin.read((char *) filters.data.data(), filters.data.size() * sizeof(float));
   }
 
-  g_vocab.n_vocab = 51864;//Need to get the additional vocab number
-  if (g_vocab.is_multilingual()) {
-      g_vocab.token_eot++;
-      g_vocab.token_sot++;
-      g_vocab.token_prev++;
-      g_vocab.token_solm++;
-      g_vocab.token_not++;
-      g_vocab.token_beg++;
-  }
-  for (int i = n_vocab; i < g_vocab.n_vocab; i++) {
-      if (i > g_vocab.token_beg) {
-          word = "[_TT_" + std::to_string(i - g_vocab.token_beg) + "]";
-      } else if (i == g_vocab.token_eot) {
-          word = "[_EOT_]";
-      } else if (i == g_vocab.token_sot) {
-          word = "[_SOT_]";
-      } else if (i == g_vocab.token_prev) {
-          word = "[_PREV_]";
-      } else if (i == g_vocab.token_not) {
-          word = "[_NOT_]";
-      } else if (i == g_vocab.token_beg) {
-          word = "[_BEG_]";
-      } else {
-          word = "[_extra_token_" + std::to_string(i) + "]";
-      }
+  // load vocab
+  {
+    fin.read((char *) &n_vocab, sizeof(n_vocab));
+    g_vocab.n_vocab = n_vocab;
+    printf("\nn_vocab:%d\n",(int)n_vocab);
+
+    for (int i = 0; i < n_vocab; i++) {
+      uint32_t len;
+      fin.read((char *) &len, sizeof(len));
+
+      word.resize(len);
+      fin.read((char *) word.data(), len);
       g_vocab.id_to_token[i] = word;
-      // printf("%s: g_vocab[%d] = '%s'\n", __func__, i, word.c_str());
+      //printf("len:%d",(int)len);
+      //printf("'%s'\n", g_vocab.id_to_token[i].c_str());
+    }
+
+    g_vocab.n_vocab = 51864;//add additional vocab ids
+    if (g_vocab.is_multilingual()) {
+        g_vocab.token_eot++;
+        g_vocab.token_sot++;
+        g_vocab.token_prev++;
+        g_vocab.token_solm++;
+        g_vocab.token_not++;
+        g_vocab.token_beg++;
+    }
+    for (int i = n_vocab; i < g_vocab.n_vocab; i++) {
+        if (i > g_vocab.token_beg) {
+            word = "[_TT_" + std::to_string(i - g_vocab.token_beg) + "]";
+        } else if (i == g_vocab.token_eot) {
+            word = "[_EOT_]";
+        } else if (i == g_vocab.token_sot) {
+            word = "[_SOT_]";
+        } else if (i == g_vocab.token_prev) {
+            word = "[_PREV_]";
+        } else if (i == g_vocab.token_not) {
+            word = "[_NOT_]";
+        } else if (i == g_vocab.token_beg) {
+            word = "[_BEG_]";
+        } else {
+            word = "[_extra_token_" + std::to_string(i) + "]";
+        }
+        g_vocab.id_to_token[i] = word;
+        // printf("%s: g_vocab[%d] = '%s'\n", __func__, i, word.c_str());
+    }
   }
 
   //Generate input_features for Audio file
@@ -150,13 +161,9 @@ int main(int argc, char* argv[]) {
           }
       }
     }
-    filters.n_mel = 80;
-    filters.n_fft = 201;
-    filters.data.resize(filters.n_mel * filters.n_fft);
-    memcpy((char *)filters.data.data(),input_features_filters_bin,16080*sizeof(float));
 
     //Hack if the audio file size is less than 30ms append with 0's
-    pcmf32.resize(WHISPER_SAMPLE_RATE*WHISPER_CHUNK_SIZE,0);
+    pcmf32.resize((WHISPER_SAMPLE_RATE*WHISPER_CHUNK_SIZE),0);
     if (!log_mel_spectrogram(pcmf32.data(), pcmf32.size(), WHISPER_SAMPLE_RATE, WHISPER_N_FFT, WHISPER_HOP_LENGTH, WHISPER_N_MEL, 1,filters, mel)) {
       fprintf(stderr, "%s: failed to compute mel spectrogram\n", __func__);
       return -1;
@@ -188,10 +195,10 @@ int main(int argc, char* argv[]) {
   // Get information about the memory area to use for the model's input.
   float* input = interpreter->typed_input_tensor<float>(0);
   if (argc == 2) {
-    memcpy(input,_content_input_features_bin,WHISPER_N_MEL*WHISPER_MEL_LEN*sizeof(float)); //to load pre generated input_features
+    memcpy(input, _content_input_features_bin, WHISPER_N_MEL*WHISPER_MEL_LEN*sizeof(float)); //to load pre generated input_features
   }
   else if (argc == 3) {
-    memcpy(input,mel.data.data(),mel.n_mel*mel.n_len*sizeof(float));
+    memcpy(input, mel.data.data(), mel.n_mel*mel.n_len*sizeof(float));
   }
   // Fill input buffers
   // TODO(user): Insert code to fill input tensors.
@@ -210,9 +217,10 @@ int main(int argc, char* argv[]) {
   //printf("output size:%d\n",output_size );
   int *output_int = interpreter->typed_output_tensor<int>(0);
   std::string text = "";
+  std::string word_add;
   for (int i = 0; i < output_size; i++) {
     //printf("%d\t",output_int[i]);
-    if(output_int[i] == g_vocab.token_eot) {
+    if(output_int[i] == g_vocab.token_eot){
       break;
     }
     text += whisper_token_to_str(output_int[i]);

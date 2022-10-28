@@ -3,7 +3,6 @@
 #include <fstream>
 #include <thread>
 #include <sys/time.h>
-#include "input_features_filters.h"
 
 #define DR_WAV_IMPLEMENTATION
 #include "dr_wav.h"

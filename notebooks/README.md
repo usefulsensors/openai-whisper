@@ -39,3 +39,13 @@
 *Estimated Run Time: ~1 Mins.*
 
 ## 
+
+## Run  to generate filters and vocab
+<table class="tfo-notebook-buttons" align="left">
+  <td>
+    <a target="_blank" href="https://colab.research.google.com/github/usefulsensors/openai-whisper/blob/main/notebooks/filters_vocab_gen_util.ipynb"><img src="https://www.tensorflow.org/images/colab_logo_32px.png" />Google Colaboratory</a>
+  </td>
+</table>
+*Estimated Run Time: ~1 Mins.*
+
+##
