@@ -59,7 +59,7 @@ cmake ../tensorflow_src/tensorflow/lite/examples/minimal
 In the minimal_build directory,
 
 ```sh
-# build the main example
+# build the minimal example
 cmake --build . -j
 ```
 
