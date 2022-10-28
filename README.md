@@ -67,3 +67,4 @@ cp ../tflite_minimal/vocab_gen.bin ./
 ./minimal ../models/whisper.tflite
 ./minimal ../models/whisper.tflite ../samples/jfk.wav
 ./minimal ../models/whisper.tflite ../samples/test.wav
+./minimal ../models/whisper.tflite ../samples/test_1.wav
