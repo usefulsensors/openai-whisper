@@ -76,3 +76,9 @@ cp ../tflite_minimal/filters_vocab_gen.bin ./
 ./minimal ../models/whisper.tflite ../samples/jfk.wav
 ./minimal ../models/whisper.tflite ../samples/test.wav
 ./minimal ../models/whisper.tflite ../samples/test_1.wav
+```
+
+Note: Use the arecord application to record test audio on a Linux computer.
+```sh
+arecord -r 16000 -c 1 -d 30 -f S16_LE test.wav
+```
