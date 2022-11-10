@@ -4,6 +4,7 @@ Supported platforms:
 
 - [x] Linux 
 - [x] Mac OS (Intel)
+- [x] Android OS 
 
 
 # To run whisper inference on TFLite framework
