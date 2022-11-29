@@ -4,7 +4,7 @@ Supported platforms:
 
 - [x] Linux 
 - [x] Mac OS (Intel)
-- [x] Android OS 
+- [x] Android OS
 - [x] Apple iOS 
 
 
@@ -84,3 +84,9 @@ Note: Use the arecord application to record test audio on a Linux computer.
 ```sh
 arecord -r 16000 -c 1 -d 30 -f S16_LE test.wav
 ```
+
+# Android OS
+Feel free to download the openai/whisper-tiny tflite-based Android Whisper ASR APP from [Google App Store](https://play.google.com/store/apps/details?id=com.whisper.android.tflitecpp).
+
+# Apple iOS
+Feel free to download the openai/whisper-tiny tflite-based Apple Whisper ASR APP from [Apple App Store](https://apps.apple.com/in/app/whisper-asr/id6444556326).
