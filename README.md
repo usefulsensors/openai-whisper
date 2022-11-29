@@ -2,13 +2,13 @@ For more information see the OpenAI whisper [paper](https://cdn.openai.com/paper
 
 Supported platforms:
 
-- [x] Linux 
+- [x] [Linux](run-whisper-inference-on-tflite-framework) 
 - [x] Mac OS (Intel)
-- [x] Android OS
-- [x] Apple iOS 
+- [x] [Android OS](#android-os)
+- [x] [Apple iOS](#apple-ios) 
 
 
-# To run whisper inference on TFLite framework
+# Run whisper inference on TFLite framework
 TensorFlow Lite C++ minimal example to run inference on [whisper.tflite](https://github.com/usefulsensors/openai-whisper/blob/main/models/whisper.tflite)(~40 MB hybrid model weights are in int8 and activations are in float32)
 
 This example shows how you can build a simple TensorFlow Lite application.
