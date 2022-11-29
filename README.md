@@ -2,7 +2,7 @@ For more information see the OpenAI whisper [paper](https://cdn.openai.com/paper
 
 Supported platforms:
 
-- [x] [Linux](run-whisper-inference-on-tflite-framework) 
+- [x] [Linux](#run-whisper-inference-on-tflite-framework) 
 - [x] Mac OS (Intel)
 - [x] [Android OS](#android-os)
 - [x] [Apple iOS](#apple-ios) 
