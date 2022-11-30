@@ -1,0 +1,7 @@
+Executable : /home/niranjanyadla/Android/Sdk/cmake/3.10.2.4988404/bin/ninja
+arguments : 
+-C
+/home/niranjanyadla/useful_sensors/download_tools/openai-work/srividya/Whisper-TFLIte-Android-Example/app/.cxx/cmake/release/armeabi-v7a
+native-lib
+jvmArgs : 
+

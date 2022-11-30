@@ -1,0 +1,23 @@
+# ninja log v5
+0	2	0	clean	3764ee51ff34b81d
+0	3278	1669239353	CMakeFiles/native-lib.dir/native-lib.cpp.o	58faf0b9a1cec06b
+3279	3388	1669239353	/home/niranjanyadla/useful_sensors/download_tools/openai-work/srividya/Whisper-TFLIte-Android-Example/app/build/intermediates/cmake/release/obj/arm64-v8a/libnative-lib.so	90f986846a54d461
+0	4	0	clean	3764ee51ff34b81d
+0	2	0	clean	3764ee51ff34b81d
+0	3247	1669239413	CMakeFiles/native-lib.dir/native-lib.cpp.o	58faf0b9a1cec06b
+3247	3353	1669239413	/home/niranjanyadla/useful_sensors/download_tools/openai-work/srividya/Whisper-TFLIte-Android-Example/app/build/intermediates/cmake/release/obj/arm64-v8a/libnative-lib.so	90f986846a54d461
+0	4	0	clean	3764ee51ff34b81d
+0	3244	1669239838	CMakeFiles/native-lib.dir/native-lib.cpp.o	58faf0b9a1cec06b
+3244	3352	1669239838	/home/niranjanyadla/useful_sensors/download_tools/openai-work/srividya/Whisper-TFLIte-Android-Example/app/build/intermediates/cmake/release/obj/arm64-v8a/libnative-lib.so	90f986846a54d461
+0	4	0	clean	3764ee51ff34b81d
+0	2	0	clean	3764ee51ff34b81d
+0	1	0	clean	3764ee51ff34b81d
+0	1	0	clean	3764ee51ff34b81d
+0	3307	1669247230	CMakeFiles/native-lib.dir/native-lib.cpp.o	58faf0b9a1cec06b
+3307	3426	1669247231	/home/niranjanyadla/useful_sensors/download_tools/openai-work/srividya/Whisper-TFLIte-Android-Example/app/build/intermediates/cmake/release/obj/arm64-v8a/libnative-lib.so	90f986846a54d461
+0	3	0	clean	3764ee51ff34b81d
+0	2	0	clean	3764ee51ff34b81d
+0	3690	1669247300	CMakeFiles/native-lib.dir/native-lib.cpp.o	58faf0b9a1cec06b
+3690	3811	1669247301	/home/niranjanyadla/useful_sensors/download_tools/openai-work/srividya/Whisper-TFLIte-Android-Example/app/build/intermediates/cmake/release/obj/arm64-v8a/libnative-lib.so	90f986846a54d461
+0	2	0	clean	3764ee51ff34b81d
+0	2	0	clean	3764ee51ff34b81d

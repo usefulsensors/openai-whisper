@@ -1,5 +1,6 @@
 #include <jni.h>
 #include <string>
+
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 #include <cstdio>
@@ -10,6 +11,7 @@
 #include "tensorflow/lite/optional_debug_tools.h"
 #include "whisper.h"
 #include "input_features.h"
+#include "tensorflow/lite/delegates/gpu/delegate.h"
 #define INFERENCE_ON_AUDIO_FILE 1
 
 #define TFLITE_MINIMAL_CHECK(x)                              \
@@ -17,6 +19,20 @@
     fprintf(stderr, "Error at %s:%d\n", __FILE__, __LINE__); \
     exit(1);                                                 \
   }
+
+extern "C" JNIEXPORT jint JNICALL
+Java_com_whisper_android_tflitecpp_MainActivity_freeModelJNI(
+        JNIEnv* env,
+        jobject /* this */) {
+    if(g_whisper_tflite_params.buffer){
+        __android_log_print(ANDROID_LOG_VERBOSE, "Whisper ASR",
+                            "%s: free buffer %x memory\n", __func__,
+                            g_whisper_tflite_params.buffer);
+        free(g_whisper_tflite_params.buffer);
+
+    }
+    return 0;
+}
 
 
 // Example: load a tflite model using TF Lite C++ API
@@ -31,99 +47,110 @@ Java_com_whisper_android_tflitecpp_MainActivity_loadModelJNI(
         jint is_recorded) {
 
     //Load Whisper Model into buffer
-    char* buffer = nullptr;
-    long size = 0;
-    const char* modelpath = "whisper.tflite";
-    if (!(env->IsSameObject(assetManager, NULL))) {
-        AAssetManager *mgr = AAssetManager_fromJava(env, assetManager);
-        AAsset *asset = AAssetManager_open(mgr, modelpath, AASSET_MODE_UNKNOWN);
-        assert(asset != nullptr);
-
-        size = AAsset_getLength(asset);
-        buffer = (char *) malloc(sizeof(char) * size);
-        AAsset_read(asset, buffer, size);
-        AAsset_close(asset);
-    }
-
-    //Load fileters and vocab data from preg enerated filters_vocab_gen.bin file
-    const char* vocab_filename = "filters_vocab_gen.bin";
-    whisper_filters filters;
-    whisper_mel mel;
+    jstring result = NULL;
     struct timeval start_time,end_time;
-    std::string word;
-    int32_t n_vocab = 0;
+    if(!g_whisper_tflite_params.is_whisper_tflite_initialized) {
+        gettimeofday(&start_time, NULL);
+        const char *modelpath = "whisper.tflite";
+        if (!(env->IsSameObject(assetManager, NULL))) {
+            AAssetManager *mgr = AAssetManager_fromJava(env, assetManager);
+            AAsset *asset = AAssetManager_open(mgr, modelpath, AASSET_MODE_UNKNOWN);
+            assert(asset != nullptr);
 
-    if (!(env->IsSameObject(assetManager, NULL))) {
-        AAssetManager *mgr = AAssetManager_fromJava(env, assetManager);
-        AAsset *asset = AAssetManager_open(mgr, vocab_filename, AASSET_MODE_UNKNOWN);
-        assert(asset != nullptr);
-        uint32_t magic=0;
-        AAsset_read(asset, &magic, sizeof(magic));
-        //@magic:USEN
-        if (magic != 0x5553454e) {
-           // printf("%s: invalid vocab file '%s' (bad magic)\n", __func__, fname.c_str());
-            __android_log_print(ANDROID_LOG_VERBOSE, "Whisper ASR", "%s: invalid vocab file '%s' (bad magic)\n", __func__, vocab_filename);
-            return 0;
-        }
-        // load mel filters
-        {
-            AAsset_read(asset,(char *) &filters.n_mel, sizeof(filters.n_mel));
-            AAsset_read(asset,(char *) &filters.n_fft, sizeof(filters.n_fft));
-            __android_log_print(ANDROID_LOG_VERBOSE, "Whisper ASR", "%s: n_mel:%d n_fft:%d\n", __func__, filters.n_mel,filters.n_fft);
-            filters.data.resize(filters.n_mel * filters.n_fft);
-            AAsset_read(asset,(char *) filters.data.data(), filters.data.size() * sizeof(float));
+            g_whisper_tflite_params.size = AAsset_getLength(asset);
+            g_whisper_tflite_params.buffer = (char *) malloc(sizeof(char) * g_whisper_tflite_params.size);
+            AAsset_read(asset, g_whisper_tflite_params.buffer, g_whisper_tflite_params.size);
+            AAsset_close(asset);
         }
 
-        // load vocab
-        {
-            AAsset_read(asset,(char *) &n_vocab, sizeof(n_vocab));
-            g_vocab.n_vocab = n_vocab;
-            __android_log_print(ANDROID_LOG_VERBOSE, "Whisper ASR", "\nn_vocab:%d\n",(int)n_vocab);
+        //Load filters and vocab data from preg enerated filters_vocab_gen.bin file
+        const char *vocab_filename = "filters_vocab_gen.bin";
 
-            for (int i = 0; i < n_vocab; i++) {
-                uint32_t len;
-                AAsset_read(asset,(char *) &len, sizeof(len));
 
-                word.resize(len);
-                AAsset_read(asset,(char *) word.data(), len);
-                g_vocab.id_to_token[i] = word;
-                //printf("len:%d",(int)len);
-                //printf("'%s'\n", g_vocab.id_to_token[i].c_str());
+        if (!(env->IsSameObject(assetManager, NULL))) {
+            AAssetManager *mgr = AAssetManager_fromJava(env, assetManager);
+            AAsset *asset = AAssetManager_open(mgr, vocab_filename, AASSET_MODE_UNKNOWN);
+            assert(asset != nullptr);
+            uint32_t magic = 0;
+            AAsset_read(asset, &magic, sizeof(magic));
+            //@magic:USEN
+            if (magic != 0x5553454e) {
+                // printf("%s: invalid vocab file '%s' (bad magic)\n", __func__, fname.c_str());
+                __android_log_print(ANDROID_LOG_VERBOSE, "Whisper ASR",
+                                    "%s: invalid vocab file '%s' (bad magic)\n", __func__,
+                                    vocab_filename);
+                return result;
+            }
+            // load mel filters
+            {
+                AAsset_read(asset, (char *) &filters.n_mel, sizeof(filters.n_mel));
+                AAsset_read(asset, (char *) &filters.n_fft, sizeof(filters.n_fft));
+                __android_log_print(ANDROID_LOG_VERBOSE, "Whisper ASR", "%s: n_mel:%d n_fft:%d\n",
+                                    __func__, filters.n_mel, filters.n_fft);
+                filters.data.resize(filters.n_mel * filters.n_fft);
+                AAsset_read(asset, (char *) filters.data.data(), filters.data.size() * sizeof(float));
             }
 
-            g_vocab.n_vocab = 51864;//add additional vocab ids
-            if (g_vocab.is_multilingual()) {
-                g_vocab.token_eot++;
-                g_vocab.token_sot++;
-                g_vocab.token_prev++;
-                g_vocab.token_solm++;
-                g_vocab.token_not++;
-                g_vocab.token_beg++;
-            }
-            for (int i = n_vocab; i < g_vocab.n_vocab; i++) {
-                if (i > g_vocab.token_beg) {
-                    word = "[_TT_" + std::to_string(i - g_vocab.token_beg) + "]";
-                } else if (i == g_vocab.token_eot) {
-                    word = "[_EOT_]";
-                } else if (i == g_vocab.token_sot) {
-                    word = "[_SOT_]";
-                } else if (i == g_vocab.token_prev) {
-                    word = "[_PREV_]";
-                } else if (i == g_vocab.token_not) {
-                    word = "[_NOT_]";
-                } else if (i == g_vocab.token_beg) {
-                    word = "[_BEG_]";
-                } else {
-                    word = "[_extra_token_" + std::to_string(i) + "]";
+            int32_t n_vocab = 0;
+            std::string word;
+            // load vocab
+            {
+                AAsset_read(asset, (char *) &n_vocab, sizeof(n_vocab));
+                g_vocab.n_vocab = n_vocab;
+                __android_log_print(ANDROID_LOG_VERBOSE, "Whisper ASR", "\nn_vocab:%d\n",
+                                    (int) n_vocab);
+
+                for (int i = 0; i < n_vocab; i++) {
+                    uint32_t len;
+                    AAsset_read(asset, (char *) &len, sizeof(len));
+
+                    word.resize(len);
+                    AAsset_read(asset, (char *) word.data(), len);
+                    g_vocab.id_to_token[i] = word;
+                    //printf("len:%d",(int)len);
+                    //printf("'%s'\n", g_vocab.id_to_token[i].c_str());
                 }
-                g_vocab.id_to_token[i] = word;
-                // printf("%s: g_vocab[%d] = '%s'\n", __func__, i, word.c_str());
+
+                g_vocab.n_vocab = 51864;//add additional vocab ids
+                if (g_vocab.is_multilingual()) {
+                    g_vocab.token_eot++;
+                    g_vocab.token_sot++;
+                    g_vocab.token_prev++;
+                    g_vocab.token_solm++;
+                    g_vocab.token_not++;
+                    g_vocab.token_beg++;
+                }
+                for (int i = n_vocab; i < g_vocab.n_vocab; i++) {
+                    if (i > g_vocab.token_beg) {
+                        word = "[_TT_" + std::to_string(i - g_vocab.token_beg) + "]";
+                    } else if (i == g_vocab.token_eot) {
+                        word = "[_EOT_]";
+                    } else if (i == g_vocab.token_sot) {
+                        word = "[_SOT_]";
+                    } else if (i == g_vocab.token_prev) {
+                        word = "[_PREV_]";
+                    } else if (i == g_vocab.token_not) {
+                        word = "[_NOT_]";
+                    } else if (i == g_vocab.token_beg) {
+                        word = "[_BEG_]";
+                    } else {
+                        word = "[_extra_token_" + std::to_string(i) + "]";
+                    }
+                    g_vocab.id_to_token[i] = word;
+                    // printf("%s: g_vocab[%d] = '%s'\n", __func__, i, word.c_str());
+                }
             }
+
+            AAsset_close(asset);
         }
 
-        AAsset_close(asset);
-    }
 
+        gettimeofday(&end_time, NULL);
+        __android_log_print(ANDROID_LOG_VERBOSE, "Whisper ASR",
+                            "JNI mel filter extraction time %ld seconds \n",
+                            (end_time.tv_sec - start_time.tv_sec));
+}
+    gettimeofday(&start_time, NULL);
     //Generate input_features for Audio file
     if (INFERENCE_ON_AUDIO_FILE) {
         const char* pcmfilename = env->GetStringUTFChars(fileName, 0);
@@ -141,7 +168,7 @@ Java_com_whisper_android_tflitecpp_MainActivity_loadModelJNI(
                     __android_log_print(ANDROID_LOG_VERBOSE, "Niranjan",
                                         "failed to open WAV file '%s' - check your input\n",
                                         pcmfilename);
-                    return 0;
+                    return result;
                 }
             }
             else {
@@ -158,23 +185,23 @@ Java_com_whisper_android_tflitecpp_MainActivity_loadModelJNI(
 
                 if (!drwav_init_memory(&wav, audio_buffer, audio_dataSize,NULL)) {
                  __android_log_print(ANDROID_LOG_VERBOSE, "Niranjan", "failed to open WAV file '%s' - check your input\n", pcmfilename);
-                 return 0;
+                 return result;
               }
             }
             if (wav.channels != 1 && wav.channels != 2) {
                 __android_log_print(ANDROID_LOG_VERBOSE, "Niranjan", "WAV file '%s' must be mono or stereo\n", pcmfilename);
 
-                return 0;
+                return result;
             }
 
             if (wav.sampleRate != WHISPER_SAMPLE_RATE) {
                 __android_log_print(ANDROID_LOG_VERBOSE, "Niranjan", "WWAV file '%s' must be 16 kHz\n", pcmfilename);
-                return 0;
+                return result;
             }
 
             if (wav.bitsPerSample != 16) {
                 __android_log_print(ANDROID_LOG_VERBOSE, "Niranjan", "WAV file '%s' must be 16-bit\n", pcmfilename);
-                return 0;
+                return result;
             }
 
             int n = wav.totalPCMFrameCount;
@@ -198,52 +225,73 @@ Java_com_whisper_android_tflitecpp_MainActivity_loadModelJNI(
 
         //Hack if the audio file size is less than 30ms append with 0's
         pcmf32.resize((WHISPER_SAMPLE_RATE*WHISPER_CHUNK_SIZE),0);
-        if (!log_mel_spectrogram(pcmf32.data(), pcmf32.size(), WHISPER_SAMPLE_RATE, WHISPER_N_FFT, WHISPER_HOP_LENGTH, WHISPER_N_MEL, 1,filters, mel)) {
+        const auto processor_count = std::thread::hardware_concurrency();
+        __android_log_print(ANDROID_LOG_VERBOSE, "Whisper ASR", "\ncpu_cores%d\n",processor_count);
+        if (!log_mel_spectrogram(pcmf32.data(), pcmf32.size(), WHISPER_SAMPLE_RATE, WHISPER_N_FFT, WHISPER_HOP_LENGTH, WHISPER_N_MEL, processor_count,filters, mel)) {
             fprintf(stderr, "%s: failed to compute mel spectrogram\n", __func__);
-            return 0;
+            return result;
         }
         __android_log_print(ANDROID_LOG_VERBOSE, "Whisper ASR", "\nmel.n_len%d\n",mel.n_len);
         __android_log_print(ANDROID_LOG_VERBOSE, "Whisper ASR", "\nmel.n_mel:%d\n",mel.n_mel);
     }//end of audio file processing
 
-    // Load tflite model buffer
-    std::unique_ptr<tflite::FlatBufferModel> model =
-            tflite::FlatBufferModel::BuildFromBuffer(buffer, size);
-    TFLITE_MINIMAL_CHECK(model != nullptr);
+    gettimeofday(&end_time, NULL);
+    __android_log_print(ANDROID_LOG_VERBOSE, "Whisper ASR", "JNI (Spectrogram)input feature extraction time %ld seconds \n",(end_time.tv_sec-start_time.tv_sec));
 
-    // Build the interpreter with the InterpreterBuilder.
-    // Note: all Interpreters should be built with the InterpreterBuilder,
-    // which allocates memory for the Interpreter and does various set up
-    // tasks so that the Interpreter can read the provided model.
-    tflite::ops::builtin::BuiltinOpResolver resolver;
-    tflite::InterpreterBuilder builder(*model, resolver);
-    std::unique_ptr<tflite::Interpreter> interpreter;
-    builder(&interpreter);
-    TFLITE_MINIMAL_CHECK(interpreter != nullptr);
+    if(!g_whisper_tflite_params.is_whisper_tflite_initialized) {
+        // Load tflite model buffer
+        g_whisper_tflite_params.model =
+                tflite::FlatBufferModel::BuildFromBuffer(g_whisper_tflite_params.buffer, g_whisper_tflite_params.size);
+        TFLITE_MINIMAL_CHECK(g_whisper_tflite_params.model != nullptr);
 
-    // Allocate tensor buffers.
-    TFLITE_MINIMAL_CHECK(interpreter->AllocateTensors() == kTfLiteOk);
+        // Build the interpreter with the InterpreterBuilder.
+        // Note: all Interpreters should be built with the InterpreterBuilder,
+        // which allocates memory for the Interpreter and does various set up
+        // tasks so that the Interpreter can read the provided model.
 
-    float* input = interpreter->typed_input_tensor<float>(0);
+        tflite::InterpreterBuilder builder(*(g_whisper_tflite_params.model), g_whisper_tflite_params.resolver);
 
-    if (INFERENCE_ON_AUDIO_FILE){
-        memcpy(input, mel.data.data(), mel.n_mel*mel.n_len*sizeof(float));
-    }else{
-        memcpy(input, _content_input_features_bin, WHISPER_N_MEL*WHISPER_MEL_LEN*sizeof(float)); //to load pre generated input_features
+        builder(&(g_whisper_tflite_params.interpreter));
+        TFLITE_MINIMAL_CHECK(g_whisper_tflite_params.interpreter != nullptr);
+
+        // NEW: Prepare GPU delegate.
+        //  auto* delegate = TfLiteGpuDelegateV2Create(nullptr);
+        // if (interpreter->ModifyGraphWithDelegate(delegate) != kTfLiteOk) {
+        //     __android_log_print(ANDROID_LOG_VERBOSE, "Whisper ASR", "gpu delegate failed \n");
+        // }
+
+        // Allocate tensor buffers.
+        TFLITE_MINIMAL_CHECK(g_whisper_tflite_params.interpreter->AllocateTensors() == kTfLiteOk);
+
+        g_whisper_tflite_params.input = g_whisper_tflite_params.interpreter->typed_input_tensor<float>(0);
+        g_whisper_tflite_params.is_whisper_tflite_initialized = true;
     }
+    gettimeofday(&start_time, NULL);
+    if (INFERENCE_ON_AUDIO_FILE) {
+        memcpy(g_whisper_tflite_params.input, mel.data.data(), mel.n_mel*mel.n_len*sizeof(float));
+    }else{
+        memcpy(g_whisper_tflite_params.input, _content_input_features_bin, WHISPER_N_MEL*WHISPER_MEL_LEN*sizeof(float)); //to load pre generated input_features
+    }
+    gettimeofday(&end_time, NULL);
+    __android_log_print(ANDROID_LOG_VERBOSE, "Whisper ASR", "JNI input copy time %ld seconds \n",(end_time.tv_sec-start_time.tv_sec));
         gettimeofday(&start_time, NULL);
     // Run inference
-    TFLITE_MINIMAL_CHECK(interpreter->Invoke() == kTfLiteOk);
+    //TFLITE_MINIMAL_CHECK(interpreter->Invoke() == kTfLiteOk);
+    // Run inference.
+    //WriteToInputTensor(interpreter->typed_input_tensor<float>(0));
+    if (g_whisper_tflite_params.interpreter->Invoke() != kTfLiteOk) return result;
+    //ReadFromOutputTensor(interpreter->typed_output_tensor<float>(0));
+
     gettimeofday(&end_time, NULL);
 
     __android_log_print(ANDROID_LOG_VERBOSE, "Whisper ASR", "JNI Inference time %ld seconds \n",(end_time.tv_sec-start_time.tv_sec));
-    int output = interpreter->outputs()[0];
-    TfLiteTensor *output_tensor = interpreter->tensor(output);
+    int output = g_whisper_tflite_params.interpreter->outputs()[0];
+    TfLiteTensor *output_tensor = g_whisper_tflite_params.interpreter->tensor(output);
     TfLiteIntArray *output_dims = output_tensor->dims;
     // assume output dims to be something like (1, 1, ... ,size)
     auto output_size = output_dims->data[output_dims->size - 1];
     //printf("output size:%d\n",output_size );
-    int *output_int = interpreter->typed_output_tensor<int>(0);
+    int *output_int = g_whisper_tflite_params.interpreter->typed_output_tensor<int>(0);
     std::string text = "";
     std::string word_add;
     for (int i = 0; i < output_size; i++) {
@@ -257,8 +305,6 @@ Java_com_whisper_android_tflitecpp_MainActivity_loadModelJNI(
     __android_log_print(ANDROID_LOG_VERBOSE, "Whisper ASR", "\n%s\n", text.c_str());
     printf("\n");
     //std::string status = "Load TF Lite model successfully!";
-    free(buffer);
+    //free(buffer);
     return env->NewStringUTF(text.c_str());
-
-
 }

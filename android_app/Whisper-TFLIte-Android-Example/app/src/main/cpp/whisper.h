@@ -32,10 +32,24 @@ struct whisper_vocab {
     bool is_multilingual() const {
         return n_vocab == 51865;
     }
+
 };
 
 //whisper vocab global variable
 whisper_vocab g_vocab;
+
+struct whisper_tflite {
+    char* buffer = nullptr;
+    long size = 0;
+    std::unique_ptr<tflite::FlatBufferModel> model;
+    tflite::ops::builtin::BuiltinOpResolver resolver;
+    std::unique_ptr<tflite::Interpreter> interpreter;
+    float *input;
+
+    bool is_whisper_tflite_initialized=false;
+};
+
+whisper_tflite g_whisper_tflite_params;
 
 //Added audio front end processing from https://github.com/ggerganov/whisper.cpp
 // third-party utilities
@@ -60,7 +74,8 @@ struct whisper_mel {
 
     std::vector<float> data;
 };
-
+whisper_filters filters;
+whisper_mel mel;
 void print(std::vector <float> const &a) {
    std::cout << "The vector elements are : ";
 
@@ -263,3 +278,5 @@ bool log_mel_spectrogram(
 
     return true;
 }
+
+

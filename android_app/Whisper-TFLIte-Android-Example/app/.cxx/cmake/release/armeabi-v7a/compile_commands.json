@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/niranjanyadla/useful_sensors/download_tools/openai-work/srividya/Whisper-TFLIte-Android-Example/app/.cxx/cmake/release/armeabi-v7a",
+  "command": "/home/niranjanyadla/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ --target=armv7-none-linux-androideabi29 --gcc-toolchain=/home/niranjanyadla/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/niranjanyadla/Android/Sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/linux-x86_64/sysroot  -Dnative_lib_EXPORTS -I/home/niranjanyadla/useful_sensors/download_tools/openai-work/srividya/Whisper-TFLIte-Android-Example/app/src/main/cpp/tf-lite-api/tensorflow_src -I/home/niranjanyadla/useful_sensors/download_tools/openai-work/srividya/Whisper-TFLIte-Android-Example/app/src/main/cpp/tf-lite-api/include/flatbuffers/include  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -march=armv7-a -mthumb -Wformat -Werror=format-security  -frtti -fexceptions -Oz -DNDEBUG  -fPIC   -o CMakeFiles/native-lib.dir/native-lib.cpp.o -c /home/niranjanyadla/useful_sensors/download_tools/openai-work/srividya/Whisper-TFLIte-Android-Example/app/src/main/cpp/native-lib.cpp",
+  "file": "/home/niranjanyadla/useful_sensors/download_tools/openai-work/srividya/Whisper-TFLIte-Android-Example/app/src/main/cpp/native-lib.cpp"
+}
+]

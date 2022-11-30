@@ -1,0 +1,3 @@
+/home/niranjanyadla/useful_sensors/download_tools/openai-work/srividya/Whisper-TFLIte-Android-Example/app/.cxx/cmake/release/armeabi-v7a/CMakeFiles/rebuild_cache.dir
+/home/niranjanyadla/useful_sensors/download_tools/openai-work/srividya/Whisper-TFLIte-Android-Example/app/.cxx/cmake/release/armeabi-v7a/CMakeFiles/edit_cache.dir
+/home/niranjanyadla/useful_sensors/download_tools/openai-work/srividya/Whisper-TFLIte-Android-Example/app/.cxx/cmake/release/armeabi-v7a/CMakeFiles/native-lib.dir

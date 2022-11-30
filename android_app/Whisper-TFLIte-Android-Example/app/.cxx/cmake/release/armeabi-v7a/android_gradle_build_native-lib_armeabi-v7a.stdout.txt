@@ -1,0 +1,2 @@
+ninja: Entering directory `/home/niranjanyadla/useful_sensors/download_tools/openai-work/srividya/Whisper-TFLIte-Android-Example/app/.cxx/cmake/release/armeabi-v7a'
+ninja: no work to do.

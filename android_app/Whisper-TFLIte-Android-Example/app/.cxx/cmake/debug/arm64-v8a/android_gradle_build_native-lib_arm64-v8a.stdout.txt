@@ -1,0 +1,7 @@
+ninja: Entering directory `/home/niranjanyadla/useful_sensors/download_tools/openai-work/srividya/Whisper-TFLIte-Android-Example/app/.cxx/cmake/debug/arm64-v8a'
+[1/2] Building CXX object CMakeFiles/native-lib.dir/native-lib.cpp.o
+/home/niranjanyadla/useful_sensors/download_tools/openai-work/srividya/Whisper-TFLIte-Android-Example/app/src/main/cpp/native-lib.cpp:30:29: warning: format specifies type 'unsigned int' but the argument has type 'char *' [-Wformat]
+                            g_whisper_tflite_params.buffer);
+                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 warning generated.
+[2/2] Linking CXX shared library /home/niranjanyadla/useful_sensors/download_tools/openai-work/srividya/Whisper-TFLIte-Android-Example/app/build/intermediates/cmake/debug/obj/arm64-v8a/libnative-lib.so
