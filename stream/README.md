@@ -1,5 +1,5 @@
 # Run stream using whisper model on TFLite framework
-TensorFlow Lite C++ stream example to run inference on [whisper.tflite](https://github.com/usefulsensors/openai-whisper/blob/main/models/whisper.tflite)(~40 MB hybrid model weights are in int8 and activations are in float32)
+TensorFlow Lite C++ stream example to run inference using [whisper.tflite](https://github.com/usefulsensors/openai-whisper/blob/main/models/whisper.tflite)(~40 MB hybrid model weights are in int8 and activations are in float32)
 
 This example shows how you can build a stream TensorFlow Lite application using Whisper hybrid model.
 
