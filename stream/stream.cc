@@ -258,6 +258,7 @@ int main(int argc, char* argv[]) {
   const int n_samples_keep = 0.2*WHISPER_SAMPLE_RATE;
   std::vector<float> pcmf32(n_samples_30s, 0.0f);
   std::vector<float> pcmf32_old;
+  std::vector<float> pcmf32_to_keep(n_samples_30s, 0.0f);
   const int n_new_line = WHISPER_LENGTH_MS / WHISPER_STEP_MS - 1;
   bool is_running = true;
   int n_iter = 0;
@@ -267,7 +268,7 @@ int main(int argc, char* argv[]) {
   load_mel_vocab_from_pre_gen_array();
 
   // init audio
-  if (!audio_sdl_init(1)) {
+  if (!audio_sdl_init(0)) {
       fprintf(stderr, "%s: audio_sdl_init() failed!\n", __func__);
       return 1;
   }
@@ -310,27 +311,45 @@ int main(int argc, char* argv[]) {
 
       const int n_samples_new = SDL_GetQueuedAudioSize(g_dev_id_in)/sizeof(float);
 
-      // take one second from previous iteration
-      //const int n_samples_take = std::min((int) pcmf32_old.size(), std::max(0, n_samples_30s/30 - n_samples_new));
-
-      // take up to params.length_ms audio from previous iteration
-      const int n_samples_take = std::min((int) pcmf32_old.size(), std::max(0, n_samples_keep + n_samples_len - n_samples_new));
 
       //printf("processing: take = %d, new = %d, old = %d\n", n_samples_take, n_samples_new, (int) pcmf32_old.size());
 
-      pcmf32.resize(n_samples_new + n_samples_take);
+      pcmf32.resize(n_samples_new);
 
-      for (int i = 0; i < n_samples_take; i++) {
-          pcmf32[i] = pcmf32_old[pcmf32_old.size() - n_samples_take + i];
+
+      SDL_DequeueAudio(g_dev_id_in, pcmf32.data() , n_samples_new*sizeof(float));
+#if 0
+      static int total_samples = 0;
+      total_samples += n_samples_new;
+      if (total_samples <= 480000) {
+        memcpy(&pcmf32_to_keep[total_samples - n_samples_new], pcmf32.data(), n_samples_new * sizeof(float));
+      } else {
+        memmove(&pcmf32_to_keep[0], &pcmf32_to_keep[n_samples_new], (n_samples_30s - n_samples_new) * sizeof(float));
+	memcpy(&pcmf32_to_keep[n_samples_30s - n_samples_new], pcmf32.data(), n_samples_new * sizeof(float));
       }
+#else
 
-      SDL_DequeueAudio(g_dev_id_in, pcmf32.data() + n_samples_take, n_samples_new*sizeof(float));
+       static int n_buffer_samples = 0;
+       if( (n_buffer_samples+n_samples_new) > n_samples_30s)
+          pcmf32_to_keep.resize(n_buffer_samples+n_samples_new);
 
-      pcmf32_old = pcmf32;
+       for (int i = 0; i < n_samples_new; i++) {
+          pcmf32_to_keep[n_buffer_samples+i] = pcmf32[i] ;
+       }
+
+       n_buffer_samples = n_buffer_samples+n_samples_new;
+
+       if(n_buffer_samples >= n_samples_30s){
+          pcmf32 = std::vector<float>(pcmf32_to_keep.end() - n_samples_30s, pcmf32_to_keep.end());
+          pcmf32_to_keep.resize(n_samples_30s);
+          pcmf32_to_keep = pcmf32;
+          n_buffer_samples = n_samples_30s;
+       }
+#endif
+
       //Generate spectrograms
-      pcmf32.resize((WHISPER_SAMPLE_RATE*WHISPER_CHUNK_SIZE),0);
       const auto processor_count = std::thread::hardware_concurrency();
-      if (!log_mel_spectrogram(pcmf32.data(), pcmf32.size(), WHISPER_SAMPLE_RATE, WHISPER_N_FFT, WHISPER_HOP_LENGTH, WHISPER_N_MEL, processor_count,filters, mel)) {
+      if (!log_mel_spectrogram(pcmf32_to_keep.data(), pcmf32_to_keep.size(), WHISPER_SAMPLE_RATE, WHISPER_N_FFT, WHISPER_HOP_LENGTH, WHISPER_N_MEL, processor_count,filters, mel)) {
         fprintf(stderr, "%s: failed to compute mel spectrogram\n", __func__);
         return -1;
       }
@@ -354,7 +373,6 @@ int main(int argc, char* argv[]) {
       TfLiteIntArray *output_dims = output_tensor->dims;
       // assume output dims to be something like (1, 1, ... ,size)
       auto output_size = output_dims->data[output_dims->size - 1];
-    //  printf("\noutput_size:%d",output_size);
       //printf("output size:%d\n",output_size );
       int *output_int = interpreter->typed_output_tensor<int>(0);
       std::string text = "";
@@ -368,15 +386,9 @@ int main(int argc, char* argv[]) {
         if((output_int[i] !=50257) && (output_int[i] !=50362))
             text += whisper_token_to_str(output_int[i]);
       }
-      printf("%s", text.c_str());
-      fflush(stdout);
-      ++n_iter;
+      printf("\n%s\n", text.c_str());
+      //fflush(stdout);
 
-      if ((n_iter % n_new_line) == 0) {
-        printf("\n");
-        // keep part of the audio for next iteration to try to mitigate word boundary issues
-        pcmf32_old = std::vector<float>(pcmf32.end() - n_samples_keep, pcmf32.end());
-      }
     } //end of while
 
     if (g_dev_id_in >= 0) {

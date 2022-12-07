@@ -25,19 +25,26 @@ sudo apt-get install cmake
 Or you can follow
 [the official cmake installation guide](https://cmake.org/install/)
 
-#### Step 3. Clone TensorFlow repository
+#### Step 3.Stream has dependency on SDL2 lib to capture audio
+
+```sh
+# Install SDL2 on Linux
+sudo apt-get install libsdl2-dev
+```
+
+#### Step 4. Clone TensorFlow repository
 
 ```sh
 git clone https://github.com/tensorflow/tensorflow.git tensorflow_src
 ```
 
-#### Step 4. Copy required files to tensorflow_src/tensorflow/lite/examples/stream
+#### Step 5. Copy required files to tensorflow_src/tensorflow/lite/examples/stream
 
 ```sh
 cp -fr stream tensorflow_src/tensorflow/lite/examples/
 ```
 
-#### Step 5. Create CMake build directory and run CMake tool
+#### Step 6. Create CMake build directory and run CMake tool
 
 ```sh
 mkdir stream_build
@@ -45,7 +52,7 @@ cd stream_build
 cmake ../tensorflow_src/tensorflow/lite/examples/stream
 ```
 
-#### Step 6. Build TensorFlow Lite
+#### Step 7. Build TensorFlow Lite
 
 In the stream directory,# build the stream example
 
@@ -53,7 +60,7 @@ In the stream directory,# build the stream example
 cmake --build . -j
 ```
 
-#### Step 7. Run the stream application with whisper.tflite model
+#### Step 8. Run the stream application with whisper.tflite model
 ```sh
 ./stream ../models/whisper.tflite
 ```
