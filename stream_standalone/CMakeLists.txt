@@ -5,16 +5,20 @@ cmake_minimum_required(VERSION 3.10.2)
 
 project("stream_standalone")
 
+EXECUTE_PROCESS( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE ARCHITECTURE )
+message( STATUS "Architecture: ${ARCHITECTURE}" )
+
+
 # Specify where to find the header files for TF Lite
 set( INCLUDE_DIRS
         ${CMAKE_CURRENT_LIST_DIR}/tf-lite-api/tensorflow_src
         ${CMAKE_CURRENT_LIST_DIR}/tf-lite-api/include/flatbuffers/include)
 include_directories(${INCLUDE_DIRS})
 
-# Default building for x86_64,change the library based on your target arch 
 add_library( tflite SHARED IMPORTED )
 set_target_properties( tflite PROPERTIES IMPORTED_LOCATION
-        ${CMAKE_CURRENT_LIST_DIR}/tf-lite-api/generated-libs/x86_64/libtensorflowlite.so )
+        ${CMAKE_CURRENT_LIST_DIR}/tf-lite-api/generated-libs/${ARCHITECTURE}/libtensorflowlite.so )
+
 
 # Use SDL2 for audio capturing
 find_package(SDL2 REQUIRED)

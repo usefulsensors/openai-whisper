@@ -35,7 +35,6 @@ sudo apt-get install libsdl2-dev
 #### Step 4. Build and run stream example 
 
 ```sh
-mkdir stream_standalone
 cd stream_standalone
 cmake ./
 cmake --build . -j
