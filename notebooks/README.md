@@ -39,6 +39,16 @@
 
 ##
 
+## Run Inference on openai-whisper encoder and decoder onnx models  
+<table class="tfo-notebook-buttons" align="left">
+  <td>
+    <a target="_blank" href="https://colab.research.google.com/github/usefulsensors/openai-whisper/blob/main/notebooks/whisper_onnxruntime.ipynb"><img src="https://www.tensorflow.org/images/colab_logo_32px.png" />Google Colaboratory</a>
+  </td>
+</table>
+*Estimated Run Time: ~2 Mins.*
+
+##
+
 ## Run  openai-whisper ASR model
 <table class="tfo-notebook-buttons" align="left">
   <td>
