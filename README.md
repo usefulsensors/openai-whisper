@@ -70,6 +70,11 @@ cmake --build . -j
 ```sh
 cp ../tflite_minimal/filters_vocab_gen.bin ./
 ```
+to use whisper-medium.tflite/whisper-small.tflite
+
+```sh
+cp ../models/filters_vocab_multilingual.bin ./filters_vocab_gen.bin
+```
 
 #### Step 8. Run the whisper.tflite with pre generated input_features or 16Khz 16bit Mono Audio file
 ```sh
@@ -78,6 +83,18 @@ cp ../tflite_minimal/filters_vocab_gen.bin ./
 ./minimal ../models/whisper.tflite ../samples/jfk.wav
 ./minimal ../models/whisper.tflite ../samples/test.wav
 ./minimal ../models/whisper.tflite ../samples/test_1.wav
+```
+
+to run whisper-small.tflite
+```sh
+cp ../models/filters_vocab_multilingual.bin ./filters_vocab_gen.bin
+./minimal ../models/whisper-small.tflite ../samples/jfk.wav
+```
+
+to run whisper-medium.tflite
+```sh
+cp ../models/filters_vocab_multilingual.bin ./filters_vocab_gen.bin
+./minimal ../models/whisper-medium.tflite ../samples/jfk.wav
 ```
 
 Note: Use the arecord application to record test audio on a Linux computer.
