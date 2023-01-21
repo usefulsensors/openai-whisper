@@ -9,6 +9,17 @@
 ##
 
 
+## Convert from onnx to encoder and decoder hybrid tflite model
+<table class="tfo-notebook-buttons" align="left">
+  <td>
+    <a target="_blank" href="https://colab.research.google.com/github/usefulsensors/openai-whisper/blob/main/notebooks/whisper_encoder_decoder_tflite.ipynb"><img src="https://www.tensorflow.org/images/colab_logo_32px.png" />Google Colaboratory</a>
+  </td>
+</table>
+*Estimated Run Time: ~3 Mins.*
+
+##
+
+
 ## Convert openai-whisper ASR from pytorch to tflite(int8) model
 <table class="tfo-notebook-buttons" align="left">
   <td>
