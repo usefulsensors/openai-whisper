@@ -70,6 +70,17 @@
 
 ##
 
+## Run  to generate whisper base tflite model 
+<table class="tfo-notebook-buttons" align="left">
+  <td>
+    <a target="_blank" href="https://colab.research.google.com/github/usefulsensors/openai-whisper/blob/main/notebooks/whisper_base_tflite_model.ipynb"><img src="https://www.tensorflow.org/images/colab_logo_32px.png" />Google Colaboratory</a>
+  </td>
+</table>
+
+
+
+##
+
 ## Run  to generate filters and vocab
 <table class="tfo-notebook-buttons" align="left">
   <td>
