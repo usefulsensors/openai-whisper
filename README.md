@@ -65,6 +65,13 @@ In the minimal_build directory,
 cmake --build . -j
 ```
 
+If the `cmake` build fails try using `make` instead,
+
+```sh
+# build the minimal example
+make
+```
+
 #### Step 7. Copy ~/tflite_minimal/filters_vocab_gen.bin to minimal_build
 
 ```sh

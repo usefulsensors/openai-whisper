@@ -60,6 +60,13 @@ In the stream directory,# build the stream example
 cmake --build . -j
 ```
 
+If the `cmake` build fails try using `make` instead,
+
+```sh
+# build the minimal example
+make
+```
+
 #### Step 8. Run the stream application with whisper.tflite model
 ```sh
 ./stream ../models/whisper.tflite
