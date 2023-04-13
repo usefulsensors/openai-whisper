@@ -101,7 +101,6 @@ cp ../models/filters_vocab_multilingual.bin ./filters_vocab_gen.bin
 Note: Use the arecord application to record test audio on a Linux computer.
 ```sh
 arecord -r 16000 -c 1 -d 30 -f S16_LE test.wav
-
 ```
 
 # Android OS
