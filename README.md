@@ -65,22 +65,16 @@ In the minimal_build directory,
 cmake --build . -j
 ```
 
-If the `cmake` build fails try using `make` instead,
-
+If `cmake` build fails try specifying number of cores with -j flag,
 ```sh
-# build the minimal example
-make
+cmake --build . -j 8
 ```
 
 #### Step 7. Copy ~/tflite_minimal/filters_vocab_gen.bin to minimal_build
 
+to run whisper.tflite
 ```sh
 cp ../tflite_minimal/filters_vocab_gen.bin ./
-```
-to use whisper-medium.tflite/whisper-small.tflite
-
-```sh
-cp ../models/filters_vocab_multilingual.bin ./filters_vocab_gen.bin
 ```
 
 #### Step 8. Run the whisper.tflite with pre generated input_features or 16Khz 16bit Mono Audio file
@@ -107,6 +101,7 @@ cp ../models/filters_vocab_multilingual.bin ./filters_vocab_gen.bin
 Note: Use the arecord application to record test audio on a Linux computer.
 ```sh
 arecord -r 16000 -c 1 -d 30 -f S16_LE test.wav
+
 ```
 
 # Android OS
