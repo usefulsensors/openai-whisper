@@ -45,3 +45,8 @@ cmake --build . -j
 ./stream_standalone ../models/whisper.tflite
 ```
 
+Note: use input_device_signal_analysis tool to check `default` audio device  microphone has signal.
+```sh
+python3 ../tools/input_device_signal_analysis.py --no-plot
+```
+
